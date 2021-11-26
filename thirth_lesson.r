@@ -254,3 +254,11 @@ props = sapply(qs, function(q) mean(x <= q))
 #This last style is called using an "inline" function or an "anonymous" function. Let's compare our homemade plot with the pre-built one in R:
 
 plot(ecdf(x))
+
+               prop = function() {
+  mean(x <= q)
+}
+qs = seq(from=min(x), to=max(x), length=20)
+props = sapply(qs, prop)
+plot(qs, props)
+props = sapply(qs, function(q) mean(x <= q))
