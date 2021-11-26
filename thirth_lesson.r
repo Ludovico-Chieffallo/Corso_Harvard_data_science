@@ -144,3 +144,113 @@ mean(abs(nulls)>obs)
 #The p-value is the answer to the question, what
 #is the probability that an outcome from the null distribution
 #is bigger than what we observed when the null hypothesis is true.
+
+
+
+
+##################
+#EXERCISE
+
+#Null Distributions Exercises #1
+#1/1 point (graded)
+#Set the seed at 1, then using a for-loop take a random sample of 5 mice 1,000 times. Save these averages.
+
+#What proportion of these 1,000 averages are more than 1 gram away from the average of x ?
+
+library(downloader) 
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
+filename <- basename(url)
+download(url, destfile=filename)
+x <- unlist( read.csv(filename) )
+
+set.seed(1)
+
+n<-1000
+nulls1<-vector("numeric",n)
+for (i in 1:n){
+  samp<-sample(x,5)
+  nulls1[i]<-mean(samp)
+}
+
+hist(nulls1)
+ris<- mean(abs(nulls1 - mean(x))>1)
+ris
+
+
+#Null Distributions Exercises #2
+#1 point possible (graded)
+#We are now going to increase the number of times we redo the sample from 1,000 to 10,000. Set the seed at 1, then using a for-loop take a random sample of 5 mice 10,000 times. Save these averages.
+#What proportion of these 10,000 averages are more than 1 gram away from the average of x ?
+
+
+library(downloader) 
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
+filename <- basename(url)
+download(url, destfile=filename)
+x <- unlist( read.csv(filename) )
+
+set.seed(1)
+
+n<-10000
+nulls1<-vector("numeric",n)
+for (i in 1:n){
+  samp<-sample(x,5)
+  nulls1[i]<-mean(samp)
+}
+
+hist(nulls1)
+ris<- mean(abs(nulls1 - mean(x))>1)
+ris
+
+###DISTRIBUTION----
+
+#In the video we just watched, Rafa looked at distributions of heights, and asked what was the probability of someone being shorter than a given height. 
+#In this assessment, we are going to ask the same question, but instead of people and heights, we are going to look at whole countries and the average life expectancy in those countries.
+#We will use the data set called "Gapminder" which is available as an R-package on Github. This data set contains the life expectancy, GDP per capita, and population by country, every five years, from 1952 to 2007.
+#It is an excerpt of a larger and more comprehensive set of data available on Gapminder.org External link, and the R package of this dataset was created by the statistics professor Jennifer Bryan External link.
+
+install.packages("gapminder")
+library(gapminder)
+data(gapminder)
+head(gapminder)
+
+dat1952<-gapminder[gapminder$year==1952, ]
+x<-dat1952$lifeExp
+
+hist(x)
+
+#In statistics, the empirical cumulative distribution function (or empirical cdf or empirical distribution function) is the function F(a) for any a, which tells you the proportion of the values which are less than or equal to a.
+#We can compute F in two ways: the simplest way is to type mean(x <= a). This calculates the number of values in x which are less than or equal to a, divided by the total number of values in x, in other words the proportion of values less than or equal to a.
+#The second way, which is a bit more complex for beginners, is to use the ecdf() function. This is a bit complicated because this is a function that doesn't return a value, but a function.
+
+mean(x<=40)
+
+
+
+
+
+
+
+#sapply() on a custom function
+#Suppose we want to plot the proportions of countries with life expectancy q for a range of different years. R has a built in function for this, plot(ecdf(x)), but suppose we didn't know this. The function is quite easy to build, by turning the code from question 1.1 into a custom function, and then using sapply(). Our custom function will take an input variable q, and return the proportion of countries in x less than or equal to q. The curly brackets, { and }, allow us to write an R function which spans multiple lines:
+
+prop = function(q) {
+  mean(x <= q)
+}
+#Try this out for a value of q: prop(40)
+
+#ow let's build a range of qs that we can apply the function to:
+
+qs = seq(from=min(x), to=max(x), length=20)
+#Print qs to the R console to see what the seq() function gave us. Now we can use sapply() to apply the prop function to each element of qs:
+
+props = sapply(qs, prop)
+#Take a look at props, either by printing to the console, or by plotting it over qs:
+
+plot(qs, props)
+#Note that we could also have written this in one line, by defining the prop function inside of sapply() but without naming it:
+
+props = sapply(qs, function(q) mean(x <= q))
+#This last style is called using an "inline" function or an "anonymous" function. Let's compare our homemade plot with the pre-built one in R:
+
+plot(ecdf(x))
